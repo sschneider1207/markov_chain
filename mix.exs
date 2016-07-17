@@ -36,6 +36,6 @@ defmodule MarkovChain.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:elasticsearch, in_umbrella: true},
-     {:gen_stage, "~> 0.3.0"}]
+     {:gen_stage, git: "https://github.com/elixir-lang/gen_stage"}]
   end
 end
