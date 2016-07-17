@@ -3,25 +3,14 @@ alias Experimental.GenStage
 defmodule MarkovChain do
   alias MarkovChain.{TokenizerStage, AnalyzerStage, ReducerStage}
 
-  def init(input, tokenizer, analyzer, reducer, parallelism \\ 1, timeout \\ 60_000)
-  def init(input, tokenizer, analyzer, reducer, 1, timeout) do
-    {:ok, producer} = GenStage.from_enumerable(input)
-    {:ok, tokenizer} = TokenizerStage.start_link(tokenizer)
-    {:ok, analyzer} = AnalyzerStage.start_link(analyzer)
-    {:ok, reducer} = ReducerStage.start_link(reducer, self)
-
-    GenStage.sync_subscribe(reducer, to: analyzer)
-    GenStage.sync_subscribe(analyzer, to: tokenizer)
-    GenStage.sync_subscribe(tokenizer, to: producer)
-
-    freq_map = receive do
-      {:done, map} -> map
-    after
-      timeout -> raise "Timeout"
-    end
-    freq_map
+  def init(input, tokenizer, analyzer, reducer) do
+    input
+    |> Enum.map(&tokenizer.tokenize/1)
+    |> Enum.map(&analyzer.analyze/1)
+    |> reducer.reduce(%{})
   end
-  def init(input, tokenizer, analyzer, reducer, parallelism, timeout) do
+
+  def init(input, tokenizer, analyzer, reducer, parallelism, timeout \\ 60_000) do
     {:ok, producer} = GenStage.from_enumerable(input)
 
     for _ <- 1..parallelism do

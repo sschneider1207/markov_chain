@@ -11,7 +11,7 @@ reducer = MarkovChain.Reducer.FrequencyReducer
 
 IO.puts "Generating frequency table..."
 start_time = :erlang.monotonic_time(:milli_seconds)
-freq_map = MarkovChain.init(list, tokenizer, analyzer, reducer, 1)
+freq_map = MarkovChain.init(list, tokenizer, analyzer, reducer, 5)
 end_time = :erlang.monotonic_time(:milli_seconds)
 IO.puts "Finished generating frequency table in #{end_time - start_time}ms"
 
