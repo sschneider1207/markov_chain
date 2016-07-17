@@ -21,7 +21,7 @@ defmodule MarkovChain.ReducerStage do
   def handle_events(events, _from, {reducer, acc, pid}) do
     IO.inspect {self, :erlang.monotonic_time} # to see progress
     acc = apply(reducer, :reduce, [events, acc])
-    Process.sleep(1)
+    #Process.sleep(1)
     {:noreply, [], {reducer, acc, pid}}
   end
 
