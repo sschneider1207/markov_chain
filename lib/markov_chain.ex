@@ -1,0 +1,2 @@
+defmodule MarkovChain do
+end
