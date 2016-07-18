@@ -1,0 +1,5 @@
+duration:1.0;mem stats:false;sys mem stats:false
+module;test;tags;iterations;elapsed
+FrequencyAnalyzerBench	analyze 100		100000	2437000
+FrequencyAnalyzerBench	analyze 10_000		500	1641000
+FrequencyAnalyzerBench	analyze 1_000_000		5	1781000

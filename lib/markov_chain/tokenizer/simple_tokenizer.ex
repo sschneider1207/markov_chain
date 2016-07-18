@@ -3,7 +3,7 @@ defmodule MarkovChain.Tokenizer.SimpleTokenizer do
   Splits a string on whitespace and punctuation.  Also removes quotations.
   """
   @behaviour MarkovChain.Tokenizer
-  @punctuation ~C( ,.?!;:-&/)
+  @punctuation ~C(,.?!;:-/)
 
   def tokenize(line) do
     String.downcase(line)
@@ -17,12 +17,12 @@ defmodule MarkovChain.Tokenizer.SimpleTokenizer do
     word = Enum.reverse(acc) |> to_string()
     do_simple_tokenizer(rem, [], [word|tokens])
   end
-  defp do_simple_tokenizer(<<p :: utf8, rem :: binary>>, [], tokens) when p in @punctuation do
-    do_simple_tokenizer(rem, [], [to_string([p])|tokens])
+  defp do_simple_tokenizer(<<?\n, rem :: binary>>, [], tokens) do
+    do_simple_tokenizer(rem, [], tokens)
   end
-  defp do_simple_tokenizer(<<p :: utf8, rem :: binary>>, acc, tokens) when p in @punctuation do
+  defp do_simple_tokenizer(<<?\n, rem :: binary>>, acc, tokens) do
     word = Enum.reverse(acc) |> to_string()
-    do_simple_tokenizer(rem, [], [to_string([p])|[word|tokens]])
+    do_simple_tokenizer(rem, [], [word|tokens])
   end
   defp do_simple_tokenizer(<<?" :: utf8, rem :: binary>>, [], tokens) do
     do_simple_tokenizer(rem, [], tokens)
@@ -31,6 +31,14 @@ defmodule MarkovChain.Tokenizer.SimpleTokenizer do
     word = Enum.reverse(acc) |> to_string()
     do_simple_tokenizer(rem, [], [word|tokens])
   end
+  defp do_simple_tokenizer(<<p :: utf8, rem :: binary>>, [], tokens) when p in @punctuation do
+    do_simple_tokenizer(rem, [], [to_string([p])|tokens])
+  end
+  defp do_simple_tokenizer(<<p :: utf8, rem :: binary>>, acc, tokens) when p in @punctuation do
+    word = Enum.reverse(acc) |> to_string()
+    do_simple_tokenizer(rem, [], [to_string([p])|[word|tokens]])
+  end
+
   defp do_simple_tokenizer(<<c :: utf8, rem :: binary>>, acc, tokens) do
     do_simple_tokenizer(rem, [c|acc], tokens)
   end

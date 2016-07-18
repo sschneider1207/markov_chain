@@ -1,7 +1,7 @@
 alias Experimental.GenStage
 
 defmodule MarkovChain do
-  alias MarkovChain.{TokenizerStage, AnalyzerStage, ReducerStage}
+  alias MarkovChain.{MapperStage, ReducerStage}
 
   def init(input, tokenizer, analyzer, reducer) do
     input
@@ -14,8 +14,8 @@ defmodule MarkovChain do
     {:ok, producer} = GenStage.from_enumerable(input)
 
     for _ <- 1..parallelism do
-      {:ok, tokenizer} = TokenizerStage.start_link(tokenizer)
-      {:ok, analyzer} = AnalyzerStage.start_link(analyzer)
+      {:ok, tokenizer} = MapperStage.start_link(:tokenizer, tokenizer)
+      {:ok, analyzer} = MapperStage.start_link(:analyzer, analyzer)
       {:ok, reducer} = ReducerStage.start_link(reducer, self)
 
       GenStage.sync_subscribe(reducer, to: analyzer)

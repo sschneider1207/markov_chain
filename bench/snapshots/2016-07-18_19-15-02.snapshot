@@ -1,0 +1,8 @@
+duration:5.0;mem stats:false;sys mem stats:false
+module;test;tags;iterations;elapsed
+FrequencyAnalyzerBench	analyze 100		500000	13110000
+FrequencyAnalyzerBench	analyze 10_000		5000	17016000
+FrequencyAnalyzerBench	analyze 1_000_000		20	7281000
+SimpleTokenizerBench	tokenize 100		100000	7187000
+SimpleTokenizerBench	tokenize 10_000		1000	9781000
+SimpleTokenizerBench	tokenize 1_000_000		5	8641000
