@@ -15,17 +15,25 @@ defmodule MarkovChain.Analyzer.FrequencyAnalyzer do
     %{:start => %{a => 1}, a => %{:end => 1}}
   end
   defp do_frequency_analysis([a|[b|tail]]) do
-    acc = %{:start => %{a => 1}, a => %{b => 1}}
-    do_frequency_analysis([b|tail], acc)
+    tab = :ets.new(:freq_map, [:private])
+    :ets.update_counter(tab, {:start, a}, 1, {[], 0})
+    :ets.update_counter(tab, {a, b}, 1, {[], 0})
+    do_frequency_analysis([b|tail], tab)
   end
 
-  defp do_frequency_analysis([a|[b|tail]], acc) do
-    acc = Map.update(acc, a, %{b => 1}, fn freq ->
-      Map.update(freq, b, 1, &(&1 + 1))
-    end)
-    do_frequency_analysis([b|tail], acc)
+  defp do_frequency_analysis([a|[b|tail]], tab) do
+    :ets.update_counter(tab, {a, b}, 1, {[], 0})
+    do_frequency_analysis([b|tail], tab)
   end
-  defp do_frequency_analysis([a|[]], acc) do
-    Map.put(acc, a, %{:end => 1})
+  defp do_frequency_analysis([a|[]], tab) do
+    :ets.update_counter(tab, {a, :end}, 1, {[], 0})
+    freq_map =
+      tab
+      |> :ets.tab2list()
+      |> List.foldl(%{}, fn {{key, val}, count}, map ->
+        Map.update(map, key, %{val => count}, &Map.put(&1, val, count))
+        end)
+    :ets.delete(tab)
+    freq_map
   end
 end

@@ -13,7 +13,7 @@ defmodule FrequencyAnalyzerBench do
   bench "analyze 1_000_000", data: test_data(1_000_000) do
     FrequencyAnalyzer.analyze(data)
   end
-
+  
   defp test_data(amount) do
     ?a..?z
     |> Stream.cycle()
