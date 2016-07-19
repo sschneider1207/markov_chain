@@ -26,6 +26,6 @@ defmodule MarkovChain.Analyzer.FrequencyAnalyzer do
     do_frequency_analysis([b|tail], acc)
   end
   defp do_frequency_analysis([a|[]], acc) do
-    Map.put(acc, :end, %{a => 1})
+    Map.put(acc, a, %{:end => 1})
   end
 end
