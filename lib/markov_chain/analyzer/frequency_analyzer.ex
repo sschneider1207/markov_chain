@@ -27,13 +27,16 @@ defmodule MarkovChain.Analyzer.FrequencyAnalyzer do
   end
   defp do_frequency_analysis([a|[]], tab) do
     :ets.update_counter(tab, {a, :end}, 1, {[], 0})
-    freq_map =
-      tab
-      |> :ets.tab2list()
-      |> List.foldl(%{}, fn {{key, val}, count}, map ->
-        Map.update(map, key, %{val => count}, &Map.put(&1, val, count))
-        end)
+    freq_map = tab_to_freq_map(tab)
     :ets.delete(tab)
     freq_map
+  end
+
+  def tab_to_freq_map(tab) do
+    tab
+    |> :ets.tab2list()
+    |> List.foldl(%{}, fn {{key, val}, count}, map ->
+      Map.update(map, key, %{val => count}, &Map.put(&1, val, count))
+    end)
   end
 end
