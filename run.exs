@@ -1,7 +1,7 @@
 Application.ensure_started(:markov_chain)
 
 IO.puts "Pulling elastic search data..."
-%{hits: hits} = Elasticsearch.query("lirik", "chat_message", "*:*", 0, 1_000)
+%{hits: hits} = Elasticsearch.query("lirik", "chat_message", "*:*", 0, 180_000, 30_000)
 list = Enum.map(hits, &get_in(&1, ["_source", "text"]))
 IO.puts "Found #{length(list)} documents."
 
@@ -11,7 +11,7 @@ reducer = MarkovChain.Reducer.FrequencyReducer
 
 IO.puts "Generating frequency table..."
 start_time = :erlang.monotonic_time(:milli_seconds)
-freq_map = MarkovChain.init(list, tokenizer, analyzer, reducer, 10)
+freq_map = MarkovChain.init(list, tokenizer, analyzer, reducer)
 end_time = :erlang.monotonic_time(:milli_seconds)
 IO.puts "Finished generating frequency table in #{end_time - start_time}ms"
 

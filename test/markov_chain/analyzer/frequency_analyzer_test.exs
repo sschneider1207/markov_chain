@@ -15,6 +15,13 @@ defmodule MarkovChain.Analyzer.FrequencyAnalyzerTest do
     }
   end
 
+  test "single token gets sandwhiched" do
+    assert FrequencyAnalyzer.analyze(["a"]) == %{
+      :start => %{"a" => 1},
+      "a" => %{:end => 1}
+    }
+  end
+
   test "multiple words following a common word are both present in map" do
     assert FrequencyAnalyzer.analyze(["a", "b", "a", "c"]) == %{
       :start => %{"a" => 1},

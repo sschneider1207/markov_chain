@@ -4,10 +4,16 @@ defmodule MarkovChain do
   alias MarkovChain.{MapperStage, ReducerStage}
 
   def init(input, tokenizer, analyzer, reducer) do
-    input
-    |> Enum.map(&tokenizer.tokenize/1)
-    |> Enum.map(&analyzer.analyze/1)
-    |> reducer.reduce(%{})
+    initial_acc = reducer.init()
+    final_acc =
+      input
+      |> Enum.map(&tokenizer.tokenize/1)
+      |> Enum.map(&analyzer.analyze/1)
+      |> reducer.reduce(initial_acc)
+    case :erlang.function_exported(reducer, :finalize, 1) do
+      true -> reducer.finalize(final_acc)
+      false -> final_acc
+    end
   end
 
   def init(input, tokenizer, analyzer, reducer, parallelism, timeout \\ 60_000) do
@@ -23,7 +29,14 @@ defmodule MarkovChain do
       GenStage.sync_subscribe(tokenizer, to: producer)
     end
     maps = get_maps(parallelism, [], timeout)
-    reducer.reduce(maps, %{})
+
+    # final reduce
+    initial_acc = reducer.init()
+    final_acc = reducer.reduce(maps, initial_acc)
+    case :erlang.function_exported(reducer, :finalize, 1) do
+      true -> reducer.finalize(final_acc)
+      false -> final_acc
+    end
   end
 
   defp get_maps(0, acc, _timeout) do
@@ -47,7 +60,9 @@ defmodule MarkovChain do
     Enum.join(acc, " ")
   end
   defp do_generate_string(freq_map, prev_token, acc) do
+    IO.inspect prev_token
     list = freq_map[prev_token]
+    IO.inspect list
     token = Enum.random(list)
     do_generate_string(freq_map, token, [token|acc])
   end

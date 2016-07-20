@@ -12,10 +12,10 @@ defmodule MarkovChain.ReducerStage do
   def init([reducer, pid]) do
     state = %{
       mod: reducer,
-      reportor: pid,
+      reporter: pid,
       acc: reducer.init()
     }
-    {:consumer, {reducer, state, pid}}
+    {:consumer, state}
   end
 
   @doc false
@@ -26,11 +26,11 @@ defmodule MarkovChain.ReducerStage do
 
   @doc false
   def handle_info({_tag, {:producer, :done}}, state) do
-    acc = case :erlang.function_exported(reducer, :finalize, 1) do
+    acc = case :erlang.function_exported(state.mod, :finalize, 1) do
       true -> state.mod.finalize(state.acc)
       false -> state.acc
     end
-    send(pid, {:done, acc})
-    {:noreply, [], %{state | acc: reducer.init()}}
+    send(state.reporter, {:done, acc})
+    {:noreply, [], %{state | acc: state.mod.init()}}
   end
 end

@@ -13,17 +13,17 @@ defmodule SimpleTokenizerBench do
   venenatis ante eu cursus gravida ex leo consectetur neque
   """ # 100 words
 
-  bench "tokenize 100", data: test_data(1) do
-    SimpleTokenizer.tokenize(data)
-  end
+  #bench "tokenize 100", data: test_data(1) do
+  #  SimpleTokenizer.tokenize(data)
+  #end
 
-  bench "tokenize 10_000", data: test_data(100) do
-    SimpleTokenizer.tokenize(data)
-  end
+  #bench "tokenize 10_000", data: test_data(100) do
+  #  SimpleTokenizer.tokenize(data)
+  #end
 
-  bench "tokenize 1_000_000", data: test_data(10_000) do
-    SimpleTokenizer.tokenize(data)
-  end
+  #bench "tokenize 1_000_000", data: test_data(10_000) do
+  #  SimpleTokenizer.tokenize(data)
+  #end
 
   defp test_data(amount) do
     String.duplicate(@lorem_ipsum, amount)
